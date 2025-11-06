@@ -153,13 +153,13 @@
           e("div", { className: "md:col-span-1" },
             e("div", { className: "bg-white border rounded p-3 shadow-sm" },
               e("h2", { className: "font-semibold" }, "Found CAN IDs"),
-              e("div", { className: "mt-2" },
-                ids.length === 0 ? e("div", { className: "text-sm text-slate-500" }, "No frames parsed yet.") :
-                  e("ul", { className: "divide-y" }, ids.map((it) => e("li", {
-                    key: it.id,
-                    className: (selectedId === it.id ? 'bg-slate-100' : '') + " py-2 flex justify-between items-center"
-                  },
-                    e("button", { className: "text-left", onClick: () => setSelectedId(it.id) },
+              e("ul", { className: "divide-y mt-2" },
+                ids.map((it) =>
+                  e("li", {
+                      key: it.id,
+                      className: (selectedId === it.id ? 'bg-slate-100' : '') + " py-2 flex justify-between items-center"
+                    },
+                    e("button", { onClick: () => setSelectedId(it.id) },
                       e("div", { className: "font-mono" }, it.id),
                       e("div", { className: "text-xs text-slate-500" }, it.count + " frames")
                     ),
@@ -170,15 +170,56 @@
                         navigator.clipboard?.writeText(sample);
                         alert('Copied sample lines for ID ' + it.id);
                       }
-                    }, "Copy sample")
-                  ))))
+                    }, "Copy")
+                  )
+                )
               )
             )
           ),
           e("div", { className: "md:col-span-2" },
             e("div", { className: "bg-white border rounded p-3 shadow-sm" },
-
- (chart and table omitted for space)
+              e("h2", { className: "font-semibold" }, "Message Frequency"),
+              e("div", { style: { height: 300 } },
+                chartData.length === 0 ?
+                  e("div", { className: "text-sm text-slate-500" }, "Select an ID to see message frequency over time.") :
+                  e(ResponsiveContainer, { width: "100%", height: 300 },
+                    e(LineChart, { data: chartData },
+                      e(CartesianGrid, { strokeDasharray: "3 3" }),
+                      e(XAxis, { dataKey: "time", tickFormatter: v => new Date(v).toLocaleTimeString() }),
+                      e(YAxis, { allowDecimals: false }),
+                      e(Tooltip, { labelFormatter: v => new Date(v).toLocaleString() }),
+                      e(Line, { type: "monotone", dataKey: "count", stroke: "#3b82f6", strokeWidth: 2, dot: false })
+                    )
+                  )
+              ),
+              e("h3", { className: "font-semibold mt-4" }, "Recent Frames (max 200)"),
+              e("div", { className: "overflow-auto max-h-72 mt-2" },
+                e("table", { className: "w-full text-sm" },
+                  e("thead", { className: "sticky top-0 bg-white" },
+                    e("tr", null,
+                      e("th", { className: "p-2" }, "Time"),
+                      e("th", { className: "p-2" }, "ID"),
+                      e("th", { className: "p-2" }, "Bytes"),
+                      e("th", { className: "p-2" }, "Raw")
+                    )
+                  ),
+                  e("tbody", null,
+                    frames.slice().reverse().slice(0, 200).map((f, idx) =>
+                      e("tr", {
+                          key: idx,
+                          className: (selectedId === (f.id ?? '(no-id)') ? 'bg-slate-50' : '')
+                        },
+                        e("td", { className: "p-2 font-mono text-xs" }, new Date(f.ts).toISOString()),
+                        e("td", { className: "p-2 font-mono" }, f.id ?? '(no-id)'),
+                        e("td", { className: "p-2 font-mono text-xs" }, f.bytes.join(' ')),
+                        e("td", { className: "p-2 text-xs" }, f.raw)
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
         )
       );
     }
