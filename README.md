@@ -31,4 +31,4 @@ Just open `index.html` in a local dev server (`Live Server`, `python3 -m http.se
 
 Click the button below to deploy instantly:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/YOUR_USERNAME/osmcanbusviewer)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/import/project?template=https://github.com/mrwolfgit/osmcanbusviewer)
